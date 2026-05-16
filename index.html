@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Admin Copilot</title>
+  <meta name="description" content="Life Admin Copilot is a calm, consumer-ready personal life admin app for reminders, renewals, follow-ups, scheduling, and household tasks.">
+  <meta name="theme-color" content="#111713">
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&f[]=zodiak@400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root,
+    [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.4rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.1rem);
+      --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.7rem);
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-10: 2.5rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+      --space-20: 5rem;
+      --space-24: 6rem;
+      --color-bg: #f3f1ea;
+      --color-surface: #fbfaf7;
+      --color-surface-2: #efebe4;
+      --color-surface-offset: #e7e0d6;
+      --color-border: rgba(37, 33, 27, 0.12);
+      --color-text: #1e1a16;
+      --color-text-muted: #665f56;
+      --color-text-faint: #93897e;
+      --color-text-inverse: #f8f5ef;
+      --color-primary: #1b6a57;
+      --color-primary-hover: #145041;
+      --color-primary-highlight: #d9e7e1;
+      --color-secondary: #5e6f9f;
+      --color-warning: #976136;
+      --shadow-sm: 0 2px 10px rgba(27, 22, 18, 0.05);
+      --shadow-md: 0 18px 50px rgba(27, 22, 18, 0.1);
+      --radius-sm: 0.5rem;
+      --radius-md: 0.8rem;
+      --radius-lg: 1rem;
+      --radius-xl: 1.4rem;
+      --radius-full: 9999px;
+      --font-body: 'General Sans', 'Inter', sans-serif;
+      --font-display: 'Zodiak', Georgia, serif;
+      --content: 1200px;
+    }
+    [data-theme="dark"] {
+      --color-bg: #111713;
+      --color-surface: #171e19;
+      --color-surface-2: #202923;
+      --color-surface-offset: #28342d;
+      --color-border: rgba(233, 227, 216, 0.1);
+      --color-text: #ece4d8;
+      --color-text-muted: #bbb0a1;
+      --color-text-faint: #867b6e;
+      --color-text-inverse: #101511;
+      --color-primary: #79b8a7;
+      --color-primary-hover: #94c9ba;
+      --color-primary-highlight: #25352f;
+      --color-secondary: #9eb0df;
+      --color-warning: #daa56b;
+      --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.18);
+      --shadow-md: 0 22px 56px rgba(0, 0, 0, 0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: none; text-size-adjust: none; scroll-behavior: smooth; }
+    body {
+      min-height: 100dvh;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: 1.6;
+    }
+    img, svg { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+    .skip-link {
+      position: absolute; left: 1rem; top: -3rem; background: var(--color-primary); color: var(--color-text-inverse);
+      padding: 0.75rem 1rem; border-radius: var(--radius-md); z-index: 100;
+    }
+    .skip-link:focus { top: 1rem; }
+    .container { width: min(calc(100% - 2rem), var(--content)); margin-inline: auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 40; border-bottom: 1px solid var(--color-border);
+      background: color-mix(in srgb, var(--color-bg) 84%, transparent); backdrop-filter: blur(16px);
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: 4.5rem;
+    }
+    .brand { display: inline-flex; align-items: center; gap: 0.85rem; font-weight: 700; }
+    .brand svg { width: 2.3rem; height: 2.3rem; color: var(--color-primary); }
+    .nav-links { display: flex; align-items: center; gap: var(--space-5); color: var(--color-text-muted); }
+    .nav-links a:hover { color: var(--color-text); }
+    .nav-actions { display: flex; align-items: center; gap: var(--space-3); }
+    .theme-toggle, .menu-toggle {
+      min-width: 44px; min-height: 44px; border-radius: var(--radius-full); border: 1px solid var(--color-border);
+      background: var(--color-surface); display: inline-flex; align-items: center; justify-content: center;
+    }
+    .menu-toggle { display: none; }
+    .btn {
+      min-height: 48px; padding: 0 1.1rem; border-radius: var(--radius-full);
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem;
+      border: 1px solid transparent; font-weight: 600; transition: 180ms ease;
+    }
+    .btn-primary { background: var(--color-primary); color: var(--color-text-inverse); }
+    .btn-primary:hover { background: var(--color-primary-hover); }
+    .btn-secondary { background: var(--color-surface); border-color: var(--color-border); }
+    .btn-secondary:hover { background: var(--color-surface-2); }
+    .hero { padding: clamp(var(--space-10), 8vw, var(--space-24)) 0 var(--space-12); }
+    .hero-grid { display: grid; grid-template-columns: 1.02fr 0.98fr; gap: var(--space-8); align-items: center; }
+    .eyebrow {
+      display: inline-flex; gap: 0.5rem; align-items: center; padding: 0.5rem 0.8rem; border-radius: var(--radius-full);
+      background: var(--color-primary-highlight); color: var(--color-primary); text-transform: uppercase; font-size: var(--text-xs); letter-spacing: 0.08em; font-weight: 700;
+    }
+    .hero h1 {
+      margin-top: var(--space-5); font-family: var(--font-display); font-size: clamp(2.8rem, 1.5rem + 5vw, 5.8rem);
+      line-height: 0.96; letter-spacing: -0.03em; max-width: 9ch;
+    }
+    .hero p { margin-top: var(--space-5); color: var(--color-text-muted); max-width: 58ch; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-6); }
+    .mini-proof {
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-8);
+    }
+    .mini-proof article {
+      background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+      padding: var(--space-4); box-shadow: var(--shadow-sm);
+    }
+    .mini-proof strong { display: block; margin-bottom: 0.25rem; }
+    .app-shell {
+      border: 1px solid var(--color-border); background: linear-gradient(180deg, var(--color-surface), var(--color-surface-2));
+      border-radius: calc(var(--radius-xl) + 0.25rem); padding: var(--space-5); box-shadow: var(--shadow-md);
+    }
+    .shell-top { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-4); }
+    .shell-badge {
+      background: var(--color-primary-highlight); color: var(--color-primary); font-size: var(--text-xs); text-transform: uppercase;
+      letter-spacing: 0.08em; font-weight: 700; padding: 0.42rem 0.7rem; border-radius: var(--radius-full);
+    }
+    .shell-grid { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: var(--space-4); }
+    .sidebar-card, .board-card, .info-card, .planner-card, .list-card, .cta-card {
+      background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4);
+    }
+    .sidebar-card, .board-card { min-height: 100%; }
+    .sidebar-card ul, .board-card ul, .list-card ul { display: grid; gap: 0.85rem; list-style: none; }
+    .sidebar-card li, .board-card li, .list-card li {
+      display: flex; justify-content: space-between; gap: var(--space-3); align-items: start;
+    }
+    .label-dot {
+      display: inline-flex; align-items: center; gap: 0.45rem; font-size: var(--text-sm); color: var(--color-text-muted);
+    }
+    .label-dot::before {
+      content: ''; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--color-primary);
+    }
+    .tag {
+      font-size: var(--text-xs); color: var(--color-text-muted); background: var(--color-surface-2); border-radius: var(--radius-full); padding: 0.3rem 0.55rem;
+    }
+    .section { padding: clamp(var(--space-10), 8vw, var(--space-20)) 0; }
+    .section-head { display: grid; gap: var(--space-3); max-width: 62ch; margin-bottom: var(--space-8); }
+    .section-head h2 { font-family: var(--font-display); font-size: var(--text-2xl); line-height: 1.03; letter-spacing: -0.02em; }
+    .section-head p { color: var(--color-text-muted); }
+    .feature-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--space-4); }
+    .stack { display: grid; gap: var(--space-4); }
+    .card {
+      background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5); box-shadow: var(--shadow-sm);
+    }
+    .card h3 { font-size: var(--text-lg); margin-bottom: var(--space-2); }
+    .card p { color: var(--color-text-muted); }
+    .clean-list { display: grid; gap: 0.9rem; margin-top: var(--space-4); list-style: none; }
+    .clean-list li { position: relative; padding-left: 1rem; color: var(--color-text-muted); }
+    .clean-list li::before { content: ''; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--color-primary); position: absolute; top: 0.72rem; left: 0; }
+    .workflow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); }
+    .step-card {
+      background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5);
+    }
+    .step-number {
+      width: 2rem; height: 2rem; border-radius: 50%; background: var(--color-primary-highlight); color: var(--color-primary);
+      display: inline-flex; align-items: center; justify-content: center; font-size: var(--text-sm); font-weight: 700; margin-bottom: var(--space-3);
+    }
+    .collections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+    .collection-card {
+      background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-5);
+      display: grid; gap: var(--space-3);
+    }
+    .pricing-band {
+      background: var(--color-text); color: var(--color-text-inverse); border-radius: calc(var(--radius-xl) + 0.2rem);
+      padding: clamp(var(--space-8), 7vw, var(--space-16)); display: grid; grid-template-columns: 1fr auto; gap: var(--space-6); align-items: center;
+    }
+    .pricing-band p { color: rgba(248, 245, 239, 0.76); max-width: 56ch; }
+    .price-box {
+      background: rgba(248, 245, 239, 0.08); border: 1px solid rgba(248, 245, 239, 0.14); border-radius: var(--radius-xl);
+      padding: var(--space-5); min-width: 250px;
+    }
+    .price-box strong { font-size: clamp(2.6rem, 1.8rem + 3vw, 4rem); line-height: 1; display: block; }
+    .faq { display: grid; gap: var(--space-3); }
+    details {
+      background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4);
+    }
+    summary { cursor: pointer; font-weight: 600; }
+    details p { margin-top: var(--space-3); color: var(--color-text-muted); }
+    .footer { padding: var(--space-10) 0 var(--space-12); }
+    .footer-row {
+      border-top: 1px solid var(--color-border); padding-top: var(--space-6); display: flex; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap;
+      color: var(--color-text-muted);
+    }
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity 480ms ease, transform 480ms ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .mobile-panel {
+      display: none; position: absolute; left: 1rem; right: 1rem; top: calc(100% + 0.75rem); background: var(--color-surface);
+      border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-4); box-shadow: var(--shadow-md);
+    }
+    .mobile-panel.open { display: grid; gap: var(--space-3); }
+    .mobile-panel a, .mobile-panel .btn { width: 100%; justify-content: center; }
+    @media (max-width: 1024px) {
+      .hero-grid, .feature-layout, .pricing-band { grid-template-columns: 1fr; }
+      .workflow, .collections { grid-template-columns: 1fr 1fr; }
+      .mini-proof { grid-template-columns: 1fr; }
+      .shell-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 860px) {
+      .nav-links, .nav-actions .btn-secondary { display: none; }
+      .menu-toggle { display: inline-flex; }
+    }
+    @media (max-width: 720px) {
+      .workflow, .collections { grid-template-columns: 1fr; }
+      .container { width: min(calc(100% - 1.25rem), var(--content)); }
+      .nav { min-height: 4rem; }
+      .hero h1 { max-width: 10ch; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="topbar">
+    <div class="container nav">
+      <a href="#top" class="brand" aria-label="Life Admin Copilot home">
+        <svg viewBox="0 0 64 64" role="img" aria-label="Life Admin Copilot logo" fill="none">
+          <rect x="12" y="10" width="40" height="44" rx="10" stroke="currentColor" stroke-width="4"></rect>
+          <path d="M22 24h20M22 34h20M22 44h12" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+        </svg>
+        <span>Life Admin Copilot</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#features">Features</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+        </button>
+        <a class="btn btn-secondary" href="#pricing">View pricing</a>
+        <a class="btn btn-primary" href="#buy">Buy now</a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"></path></svg>
+        </button>
+      </div>
+      <div id="mobile-menu" class="mobile-panel" aria-label="Mobile navigation">
+        <a href="#features">Features</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a class="btn btn-primary" href="#buy">Buy now</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="reveal visible">
+          <span class="eyebrow">Calm life-admin software</span>
+          <h1>All the small life stuff, in one calm place.</h1>
+          <p>Life Admin Copilot is a consumer-ready personal organization app built for renewals, follow-ups, reminders, scheduling, forms, and household tasks. Consumers consistently look for tools that make reminders, recurring tasks, shared calendars, and everyday organization easier, especially when they reduce mental load instead of adding more noise. [web:325][web:331][web:336]</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#buy">Get it for $19</a>
+            <a class="btn btn-secondary" href="#features">Explore features</a>
+          </div>
+          <div class="mini-proof">
+            <article>
+              <strong>One-time purchase</strong>
+              <span>No subscription pressure.</span>
+            </article>
+            <article>
+              <strong>Built for real tasks</strong>
+              <span>Renewals, forms, follow-ups, and errands.</span>
+            </article>
+            <article>
+              <strong>Designed to feel calm</strong>
+              <span>Less noise. Less mental clutter.</span>
+            </article>
+          </div>
+        </div>
+        <div class="app-shell reveal" aria-label="Life Admin Copilot product preview">
+          <div class="shell-top">
+            <div>
+              <strong>Today</strong>
+              <p style="color:var(--color-text-muted);font-size:var(--text-sm);">A quiet dashboard for the things that still need to get done.</p>
+            </div>
+            <span class="shell-badge">Personal</span>
+          </div>
+          <div class="shell-grid">
+            <section class="sidebar-card">
+              <h3 style="font-size:var(--text-sm);margin-bottom:var(--space-3);text-transform:uppercase;letter-spacing:0.08em;color:var(--color-text-muted);">Life areas</h3>
+              <ul>
+                <li><span class="label-dot">Home</span><span class="tag">4 open</span></li>
+                <li><span class="label-dot">Health</span><span class="tag">2 due soon</span></li>
+                <li><span class="label-dot">Money</span><span class="tag">3 tracked</span></li>
+                <li><span class="label-dot">Family</span><span class="tag">5 active</span></li>
+                <li><span class="label-dot">Documents</span><span class="tag">2 renewals</span></li>
+              </ul>
+            </section>
+            <section class="board-card">
+              <h3 style="font-size:var(--text-lg);margin-bottom:var(--space-3);">What Life Admin Copilot is handling</h3>
+              <ul>
+                <li>
+                  <div>
+                    <strong>Car insurance renewal</strong>
+                    <p style="font-size:var(--text-sm);color:var(--color-text-muted);">Saved due date, reminder schedule, and checklist.</p>
+                  </div>
+                  <span class="tag">10 days</span>
+                </li>
+                <li>
+                  <div>
+                    <strong>School form follow-up</strong>
+                    <p style="font-size:var(--text-sm);color:var(--color-text-muted);">Waiting for response, follow-up reminder already queued.</p>
+                  </div>
+                  <span class="tag">Queued</span>
+                </li>
+                <li>
+                  <div>
+                    <strong>Dentist reschedule</strong>
+                    <p style="font-size:var(--text-sm);color:var(--color-text-muted);">Draft notes and next call window are ready.</p>
+                  </div>
+                  <span class="tag">Ready</span>
+                </li>
+                <li>
+                  <div>
+                    <strong>Utility bill dispute</strong>
+                    <p style="font-size:var(--text-sm);color:var(--color-text-muted);">Reference number stored, escalation date tracked.</p>
+                  </div>
+                  <span class="tag">Tracked</span>
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2>What the Life Admin Copilot product includes.</h2>
+          <p>Consumers respond to organization tools that combine reminders, recurring tasks, shared household coordination, and clear task views. Calm positioning also matters: several life-admin apps explicitly frame themselves around reducing pressure, noise, and mental clutter rather than turning life into a productivity contest. [web:329][web:334][web:336]</p>
+        </div>
+        <div class="feature-layout">
+          <div class="stack">
+            <article class="card reveal">
+              <h3>Renewals and deadlines</h3>
+              <p>Track subscriptions, registrations, policies, school deadlines, warranty periods, and documents that always seem to sneak up on you.</p>
+              <ul class="clean-list">
+                <li>One-off reminders with due dates.</li>
+                <li>Recurring reminders for monthly or yearly tasks.</li>
+                <li>Quiet follow-up tracking after you submit something.</li>
+              </ul>
+            </article>
+            <article class="card reveal">
+              <h3>Household command center</h3>
+              <p>Keep family tasks, home errands, appointment prep, and recurring admin in one place so nothing slips through the cracks.</p>
+              <ul class="clean-list">
+                <li>Life areas for home, family, health, money, and documents.</li>
+                <li>Shared planning structure for households and caregivers.</li>
+                <li>Simple status tags instead of bloated project management.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="stack">
+            <article class="card reveal">
+              <h3>Step-by-step planning</h3>
+              <p>Instead of a blank to-do list, the app turns admin chores into visible next steps you can actually finish.</p>
+              <ul class="clean-list">
+                <li>Checklists for forms, renewals, follow-ups, and cancellations.</li>
+                <li>Saved notes, phone numbers, links, and reference IDs.</li>
+                <li>Progress views that show what is waiting, ready, or done.</li>
+              </ul>
+            </article>
+            <article class="card reveal">
+              <h3>Calm consumer UX</h3>
+              <p>The interface is intentionally designed to feel supportive, private, and quiet, because real-life organization products often succeed when they lower mental pressure instead of increasing it. [web:333][web:336]</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="workflow">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2>A workflow ordinary people can understand.</h2>
+          <p>Shared calendars, reminders, and task coordination are especially valuable in family and busy-household contexts, which is why the workflow is designed to be simple, visual, and repeatable. [web:331][web:334][web:338]</p>
+        </div>
+        <div class="workflow">
+          <article class="step-card reveal">
+            <div class="step-number">1</div>
+            <h3>Add the task</h3>
+            <p>Enter something real like “renew license,” “book pediatrician,” or “follow up on refund.”</p>
+          </article>
+          <article class="step-card reveal">
+            <div class="step-number">2</div>
+            <h3>Get the structure</h3>
+            <p>The app organizes the due date, checklist, notes, and reminders into one tracked item.</p>
+          </article>
+          <article class="step-card reveal">
+            <div class="step-number">3</div>
+            <h3>Stay on top of it</h3>
+            <p>Use recurring reminders, Today views, and status updates so the task stays alive until it is finished.</p>
+          </article>
+          <article class="step-card reveal">
+            <div class="step-number">4</div>
+            <h3>Clear your mind</h3>
+            <p>Once the task is stored, tracked, and visible, you no longer have to hold it in your head.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2>Built around real life areas.</h2>
+          <p>Organization products are strongest when they map to how people naturally think about their lives rather than forcing everything into a generic task bucket. [web:330][web:339]</p>
+        </div>
+        <div class="collections">
+          <article class="collection-card reveal">
+            <h3>Home</h3>
+            <p>Utilities, repairs, deliveries, shopping lists, returns, and recurring home admin.</p>
+          </article>
+          <article class="collection-card reveal">
+            <h3>Health</h3>
+            <p>Appointments, forms, records to bring, refill reminders, and follow-up calls.</p>
+          </article>
+          <article class="collection-card reveal">
+            <h3>Money</h3>
+            <p>Renewals, billing reminders, claims, payment disputes, and deadline tracking.</p>
+          </article>
+          <article class="collection-card reveal">
+            <h3>Family</h3>
+            <p>School forms, kid schedules, caregiving errands, and shared household tasks.</p>
+          </article>
+          <article class="collection-card reveal">
+            <h3>Documents</h3>
+            <p>Passports, registrations, warranties, IDs, and important paperwork dates.</p>
+          </article>
+          <article class="collection-card reveal">
+            <h3>Personal</h3>
+            <p>Appointments, errands, subscriptions, travel prep, and all the loose ends of daily life.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pricing">
+      <div class="container">
+        <div class="pricing-band reveal" id="buy">
+          <div>
+            <h2 style="font-family:var(--font-display);font-size:var(--text-2xl);line-height:1.03;letter-spacing:-0.02em;max-width:11ch;">Buy once. Use every day.</h2>
+            <p>Life Admin Copilot is sold as affordable consumer software, not a recurring subscription. That one-time model fits the product’s promise: a practical life tool people can own and rely on for everyday admin.</p>
+          </div>
+          <div class="price-box">
+            <span style="display:block;text-transform:uppercase;letter-spacing:0.08em;font-size:var(--text-xs);opacity:0.76;margin-bottom:0.7rem;">Launch pricing</span>
+            <strong>$19</strong>
+            <span style="display:block;margin-top:0.4rem;opacity:0.8;">one-time purchase</span>
+            <a class="btn btn-primary" style="width:100%;margin-top:1rem;" href="mailto:hello@example.com?subject=Buy%20Life%20Admin%20Copilot">Buy Life Admin Copilot</a>
+            <a class="btn btn-secondary" style="width:100%;margin-top:0.75rem;background:transparent;border-color:rgba(248,245,239,0.18);color:var(--color-text-inverse);" href="#faq">Read FAQ</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container">
+        <div class="section-head reveal">
+          <h2>Questions before launch.</h2>
+          <p>Clear answers close to the purchase decision help reduce friction and improve conversion on consumer product pages. [web:308][web:309][web:313]</p>
+        </div>
+        <div class="faq">
+          <details class="reveal">
+            <summary>What makes this different from a normal to-do app?</summary>
+            <p>Life Admin Copilot is organized around life admin instead of generic productivity. It is built for renewals, forms, follow-ups, scheduling, and household tasks that tend to create mental clutter.</p>
+          </details>
+          <details class="reveal">
+            <summary>Who should buy it?</summary>
+            <p>Busy adults, caregivers, parents, freelancers, and anyone who needs a calmer place for the constant small tasks that make adult life feel heavier than it should.</p>
+          </details>
+          <details class="reveal">
+            <summary>Why sell it as a one-time purchase?</summary>
+            <p>Because the product is meant to feel like owned software. The value is in reducing everyday friction, not in creating another monthly bill.</p>
+          </details>
+          <details class="reveal">
+            <summary>What is the consumer promise in one sentence?</summary>
+            <p>Life Admin Copilot gives you one calm place to handle reminders, renewals, forms, follow-ups, and household tasks without subscription fatigue.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-row">
+      <p>Life Admin Copilot — calm consumer software for real-life admin.</p>
+      <p>One-time purchase · Personal use · Launch-ready concept</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      const root = document.documentElement;
+      const toggle = document.querySelector('[data-theme-toggle]');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      let theme = prefersDark ? 'dark' : 'light';
+      root.setAttribute('data-theme', theme);
+
+      function updateThemeIcon() {
+        if (!toggle) return;
+        toggle.innerHTML = theme === 'dark'
+          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>'
+          : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>';
+        toggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+      }
+      updateThemeIcon();
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          theme = theme === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', theme);
+          updateThemeIcon();
+        });
+      }
+
+      const menuButton = document.querySelector('.menu-toggle');
+      const mobileMenu = document.getElementById('mobile-menu');
+      if (menuButton && mobileMenu) {
+        menuButton.addEventListener('click', function () {
+          const expanded = menuButton.getAttribute('aria-expanded') === 'true';
+          menuButton.setAttribute('aria-expanded', String(!expanded));
+          mobileMenu.classList.toggle('open');
+        });
+        mobileMenu.querySelectorAll('a').forEach((link) => {
+          link.addEventListener('click', function () {
+            mobileMenu.classList.remove('open');
+            menuButton.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+      const revealItems = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15 });
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        revealItems.forEach((item) => item.classList.add('visible'));
+      }
+    })();
+  </script>
+</body>
+</html>
